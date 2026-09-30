@@ -63,7 +63,6 @@ DevicePool
 Worker
 ```
 
----
 # Первичные артефакты
 ## Sequence Diagrams
 ### Основной сценарий
