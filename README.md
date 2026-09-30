@@ -151,6 +151,7 @@ Worker-процесс обслуживает одну заявку за раз.
 | `SimulationEngine` | Координация модельного времени и обработка событий |
 | `Statistics` | Сбор статистических показателей |
 ![Диаграмма классов](docs/diagrams/class/class-diagram.svg)
+
 Исходник: [`docs/diagrams/class/class-diagram.puml`](docs/diagrams/class/class-diagram.puml)
 
 ---
@@ -166,4 +167,5 @@ Flowchart описывает алгоритм обработки особых с
 - наличие заявок в буфере;
 - завершение моделирования.
 ![Flowchart](docs/diagrams/flowchart/system-flow.svg)
+
 Исходник: [`docs/diagrams/flowchart/system-flow.puml`](docs/diagrams/flowchart/system-flow.puml)
