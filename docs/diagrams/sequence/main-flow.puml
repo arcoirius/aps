@@ -1,0 +1,150 @@
+@startuml title
+
+title Основной сценарий работы СМО — вариант 6 \nИБ – ИЗ2 – ПЗ1 – Д1ОЗ2 – Д1ОО2 – Д2П2 – Д2Б5 – ОР1 – ОД3
+
+autonumber
+
+participant "Источник" as Source
+control "SimulationEngine" as Engine
+control "PlacementDispatcher" as PD
+queue "Buffer" as Buffer
+control "SelectionDispatcher" as SD
+collections "DevicePool" as Devices
+participant "Worker" as Worker
+control "Statistics" as Stats
+
+
+== Генерация заявки ==
+
+Source -> Engine: generateRequest()
+
+note right of Source
+ИБ - бесконечный источник.
+
+ИЗ2 - равномерный закон.
+end note
+
+Engine -> Stats: recordGenerated(request)
+
+Engine -> PD: handleArrival(request)
+
+
+== Постановка заявки в буфер ==
+
+PD -> Buffer: isFull()
+Buffer --> PD: true / false
+
+
+alt В буфере есть свободное место
+
+    PD -> Buffer: enqueue(request)
+
+    note right of Buffer
+    Д1ОЗ2 - постановка заявки 
+    в буфер в порядке поступления.
+    end note
+
+    Buffer --> PD: added
+
+else Буфер заполнен
+
+    PD -> Buffer: getLowestPriorityRequests()
+    Buffer --> PD: candidates
+
+    note right of PD
+    Д1ОО2 - отказ по 
+    приоритету источника.
+
+    Для модели:
+    И1 > И2 > И3.
+
+    Если кандидатов несколько,
+    выбирается наиболее старая.
+    end note
+
+    PD -> PD: selectOldest(candidates)
+
+    PD -> Stats: recordRejected(victim)
+
+    PD -> Buffer: remove(victim)
+    Buffer --> PD: removed
+
+    PD -> Buffer: enqueue(request)
+
+    note right of Buffer
+    Д1ОЗ2 - новая заявка 
+    помещается в конец очереди.
+    end note
+
+    Buffer --> PD: added
+
+end
+
+== Завершение обслуживания ==
+
+Worker -> Engine: serviceCompleted(request)
+
+Engine -> Stats: recordCompleted(request)
+
+Engine -> SD: onDeviceAvailable()
+
+note right of Engine
+Освобождение прибора -
+триггер для работы
+диспетчера выбора.
+end note
+
+
+== Формирование пакета ==
+
+SD -> SD: activePacketExists()
+
+alt Активного пакета нет
+
+    SD -> Buffer: getHighestPrioritySource()
+    Buffer --> SD: sourceId
+
+    SD -> Buffer: getRequestsBySource(sourceId)
+    Buffer --> SD: requests[]
+
+    SD -> SD: createPacketSnapshot(requests)
+
+    note right of SD
+    Д2Б5 - выбор заявок пакетами
+    по приоритету источника.
+    end note
+
+else Активный пакет существует
+
+    SD -> SD: continueActivePacket()
+
+end
+
+
+== Выбор заявки и прибора ==
+
+SD -> SD: getNextRequestFromPacket()
+
+SD -> Devices: findFreeRoundRobin()
+
+note right of Devices
+Д2П2 - выбор прибора 
+по кольцу.
+end note
+
+Devices --> SD: worker
+
+
+SD -> Buffer: remove(request)
+Buffer --> SD: removed
+
+
+SD -> Worker: startService(request)
+
+note right of Worker
+ПЗ1 - экспоненциальный закон
+времени обслуживания заявки.
+end note
+
+Worker --> SD: accepted
+@enduml

@@ -1,0 +1,100 @@
+@startuml title
+
+title Happy Flow — вариант 6 \nsubtitle Буфер свободен, прибор свободен
+
+autonumber
+
+participant "Источник" as Source
+control "SimulationEngine" as Engine
+control "PlacementDispatcher" as PD
+queue "Buffer" as Buffer
+control "SelectionDispatcher" as SD
+collections "DevicePool" as Devices
+participant "Worker" as Worker
+control "Statistics" as Stats
+
+== Генерация заявки ==
+
+Source -> Engine: generateRequest()
+
+note right of Source
+ИБ — бесконечный источник.
+
+ИЗ2 - равномерный закон
+генерации заявок.
+end note
+
+Engine -> Stats: recordGenerated(request)
+
+Engine -> PD: handleArrival(request)
+
+== Постановка в свободный буфер ==
+
+PD -> Buffer: isFull()
+Buffer --> PD: false
+
+PD -> Buffer: enqueue(request)
+
+note right of Buffer
+Д1ОЗ2 - постановка заявки
+в порядке поступления,
+в конец очереди.
+end note
+
+Buffer --> PD: added
+
+== Проверка свободного прибора ==
+
+Engine -> Devices: hasFreeWorker()
+Devices --> Engine: true
+
+Engine -> SD: onDeviceAvailable()
+
+== Формирование пакета ==
+
+SD -> Buffer: getHighestPrioritySource()
+Buffer --> SD: sourceId
+
+SD -> Buffer: getRequestsBySource(sourceId)
+Buffer --> SD: requests[]
+
+SD -> SD: createPacketSnapshot(requests)
+
+note right of SD
+Д2Б5 - формируется пакет заявок
+наиболее приоритетного источника.
+end note
+
+== Выбор прибора ==
+
+SD -> Devices: findFreeRoundRobin()
+
+note right of Devices
+Д2П2 - свободный прибор
+выбирается по кольцу.
+end note
+
+Devices --> SD: worker
+
+== Передача заявки на обслуживание ==
+
+SD -> SD: getNextRequestFromPacket()
+
+SD -> Buffer: remove(request)
+Buffer --> SD: removed
+
+SD -> Worker: startService(request)
+
+note right of Worker
+ПЗ1 - экспоненциальный закон
+времени обслуживания.
+end note
+
+Worker --> SD: accepted
+
+== Завершение обслуживания ==
+
+Worker -> Engine: serviceCompleted(request)
+
+Engine -> Stats: recordCompleted(request)
+@enduml

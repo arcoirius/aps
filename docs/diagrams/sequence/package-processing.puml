@@ -1,0 +1,53 @@
+@startuml title
+
+title Пакетная обработка
+
+autonumber
+
+control "SimulationEngine" as Engine
+queue "Buffer" as Buffer
+control "SelectionDispatcher" as SD
+participant "ActivePacket" as Packet
+collections "DevicePool" as Devices
+participant "Worker 1" as W1
+participant "Worker 2" as W2
+
+W1 -> Engine: serviceCompleted()
+
+Engine -> SD: onDeviceAvailable()
+
+SD -> Buffer: getHighestPrioritySource()
+Buffer --> SD: I1
+
+SD -> Buffer: getRequestsBySource(I1)
+Buffer --> SD: [R2, R4, R5]
+
+SD -> Packet: create(I1, [R2,R4,R5])
+
+== Новая заявка того же источника ==
+
+Engine -> Buffer: enqueue(R7:I1)
+Buffer --> Engine: added
+
+== Обработка текущего пакета ==
+
+loop Пока Packet содержит необработанные заявки
+
+    SD -> Packet: next()
+    Packet --> SD: request
+
+    SD -> Devices: findFreeRoundRobin()\nД2П2
+    Devices --> SD: worker
+
+    SD -> Buffer: remove(request)
+    Buffer --> SD: removed
+
+    SD -> W2: startService(request)
+
+end
+
+SD -> Packet: isEmpty()
+Packet --> SD: true
+
+SD -> SD: closeActivePacket()
+@enduml

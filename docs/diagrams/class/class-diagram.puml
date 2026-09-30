@@ -1,0 +1,206 @@
+@startuml title
+title Диаграмма классов имитационной модели — вариант 6
+
+skinparam classAttributeIconSize 0
+
+enum RequestStatus {
+    CREATED
+    BUFFERED
+    IN_SERVICE
+    COMPLETED
+    REJECTED
+}
+
+enum WorkerState {
+    FREE
+    BUSY
+}
+
+enum EventType {
+    REQUEST_GENERATED
+    SERVICE_COMPLETED
+    SIMULATION_END
+}
+
+class Request {
+    - id: long
+    - sourceId: int
+    - priority: int
+
+    - createdAt: double
+    - bufferedAt: double
+    - serviceStartedAt: double
+    - serviceFinishedAt: double
+
+    - status: RequestStatus
+
+    + markBuffered(time: double): void
+    + startService(time: double): void
+    + complete(time: double): void
+    + reject(time: double): void
+}
+
+class Source {
+    - id: int
+    - priority: int
+
+    - minGenerationInterval: double
+    - maxGenerationInterval: double
+
+    + generateRequest(time: double): Request
+    + generateNextInterval(): double
+}
+
+class Buffer {
+    - capacity: int
+    - requests: List<Request>
+
+    + enqueue(request: Request): void
+    + remove(request: Request): void
+
+    + isFull(): boolean
+    + isEmpty(): boolean
+
+    + getLowestPriorityRequests(): List<Request>
+    + getHighestPrioritySource(): int
+    + getRequestsBySource(sourceId: int): List<Request>
+}
+
+class PlacementDispatcher {
+    - buffer: Buffer
+    - statistics: Statistics
+
+    + handleArrival(request: Request): void
+    - selectRejectionCandidate(candidates: List<Request>): Request
+}
+
+class Packet {
+    - sourceId: int
+    - requests: List<Request>
+    - nextIndex: int
+
+    + next(): Request
+    + isEmpty(): boolean
+    + size(): int
+}
+
+class SelectionDispatcher {
+    - buffer: Buffer
+    - devicePool: DevicePool
+    - statistics: Statistics
+
+    - activePacket: Packet
+
+    + onDeviceAvailable(): void
+    - createPacket(): Packet
+    - getNextRequest(): Request
+}
+
+class Worker {
+    - id: int
+    - state: WorkerState
+    - currentRequest: Request
+
+    - serviceStartedAt: double
+
+    + isFree(): boolean
+    + startService(request: Request, time: double): Event
+    + completeService(time: double): Request
+}
+
+class DevicePool {
+    - workers: List<Worker>
+    - pointer: int
+
+    + hasFreeWorker(): boolean
+    + findFreeRoundRobin(): Worker
+}
+
+class Event {
+    - time: double
+    - type: EventType
+
+    - request: Request
+    - source: Source
+    - worker: Worker
+}
+
+class EventCalendar {
+    - events: PriorityQueue<Event>
+
+    + add(event: Event): void
+    + next(): Event
+    + peek(): Event
+    + isEmpty(): boolean
+}
+
+class SimulationEngine {
+    - currentTime: double
+
+    - calendar: EventCalendar
+    - sources: List<Source>
+
+    - placementDispatcher: PlacementDispatcher
+    - selectionDispatcher: SelectionDispatcher
+
+    - statistics: Statistics
+
+    + initialize(): void
+    + runStep(): void
+    + run(): void
+
+    - processEvent(event: Event): void
+}
+
+class Statistics {
+    - generatedBySource: Map
+    - rejectedBySource: Map
+    - completedBySource: Map
+
+    - waitingTimes: Map
+    - serviceTimes: Map
+    - systemTimes: Map
+
+    - workerBusyTimes: Map
+
+    + recordGenerated(request: Request): void
+    + recordRejected(request: Request): void
+    + recordServiceStart(request: Request): void
+    + recordCompleted(request: Request): void
+
+    + calculateSummary(): void
+}
+
+SimulationEngine *-- EventCalendar
+SimulationEngine o-- "1..*" Source
+SimulationEngine --> PlacementDispatcher
+SimulationEngine --> SelectionDispatcher
+SimulationEngine --> Statistics
+
+PlacementDispatcher --> Buffer
+PlacementDispatcher --> Statistics
+
+SelectionDispatcher --> Buffer
+SelectionDispatcher --> DevicePool
+SelectionDispatcher --> Statistics
+SelectionDispatcher --> "0..1" Packet
+
+DevicePool *-- "1..*" Worker
+
+Buffer o-- "0..*" Request
+
+Packet --> "1..*" Request : snapshot
+
+Source ..> Request : creates
+
+Worker --> "0..1" Request : current
+
+Event --> Request
+Event --> Source
+Event --> Worker
+
+Request --> RequestStatus
+Worker --> WorkerState
+Event --> EventType
+
+@enduml
