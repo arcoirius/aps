@@ -1,6 +1,9 @@
 @startuml title
 title Диаграмма классов имитационной модели — вариант 6
 
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #000000
+
 skinparam classAttributeIconSize 0
 
 enum RequestStatus {

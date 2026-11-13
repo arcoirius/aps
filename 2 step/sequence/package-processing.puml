@@ -2,6 +2,9 @@
 
 title Пакетная обработка
 
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #000000
+
 autonumber
 
 control "SimulationEngine" as Engine

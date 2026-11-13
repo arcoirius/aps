@@ -2,6 +2,9 @@
 
 title Основной сценарий работы СМО — вариант 6 \nИБ – ИЗ2 – ПЗ1 – Д1ОЗ2 – Д1ОО2 – Д2П2 – Д2Б5 – ОР1 – ОД3
 
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #000000
+
 autonumber
 
 participant "Источник" as Source

@@ -1,6 +1,9 @@
 @startuml title
 title Алгоритм работы имитационной модели — вариант 6
 
+skinparam backgroundColor #FFFFFF
+skinparam defaultFontColor #000000
+
 start
 
 partition "SimulationEngine" {
