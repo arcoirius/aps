@@ -7,13 +7,13 @@ skinparam defaultFontColor #000000
 
 autonumber
 
-control "SimulationEngine" as Engine
-queue "Buffer" as Buffer
-control "SelectionDispatcher" as SD
-participant "ActivePacket" as Packet
-collections "DevicePool" as Devices
-participant "Worker 1" as W1
-participant "Worker 2" as W2
+control "Движок моделирования" as Engine
+queue "Буфер" as Buffer
+control "Диспетчер выбора" as SD
+participant "Активный пакет" as Packet
+collections "Пул приборов" as Devices
+participant "Прибор 1" as W1
+participant "Прибор 2" as W2
 
 W1 -> Engine: serviceCompleted()
 

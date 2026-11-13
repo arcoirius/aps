@@ -8,13 +8,13 @@ skinparam defaultFontColor #000000
 autonumber
 
 participant "Источник" as Source
-control "SimulationEngine" as Engine
-control "PlacementDispatcher" as PD
-queue "Buffer" as Buffer
-control "SelectionDispatcher" as SD
-collections "DevicePool" as Devices
-participant "Worker" as Worker
-control "Statistics" as Stats
+control "Движок моделирования" as Engine
+control "Диспетчер постановки" as PD
+queue "Буфер" as Buffer
+control "Диспетчер выбора" as SD
+collections "Пул приборов" as Devices
+participant "Прибор" as Worker
+control "Статистика" as Stats
 
 
 == Генерация заявки ==
