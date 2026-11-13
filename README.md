@@ -138,4 +138,5 @@ Flowchart описывает алгоритм обработки особых с
 - завершение моделирования.
 ![Flowchart](2%20step/flowchart/system-flow.svg)
 
+
 Исходник: [`2%20step/flowchart/system-flow.puml`](2%20step/flowchart/system-flow.puml)
