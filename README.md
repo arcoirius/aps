@@ -78,20 +78,20 @@ Worker
 - передачу заявки на обслуживание;
 - завершение обслуживания.
 
-![Основной Sequence Diagram](docs/diagrams/sequence/main-flow.svg)
-Исходник: [`docs/diagrams/sequence/main-flow.puml`](docs/diagrams/sequence/main-flow.puml)
+![Основной Sequence Diagram](2 step/sequence/main-flow.svg)
+Исходник: [`2 step/sequence/main-flow.puml`](2 step/sequence/main-flow.puml)
 
 ### Happy Flow
-![Happy Flow](docs/diagrams/sequence/happy-flow.svg)
-Исходник: [`docs/diagrams/sequence/happy-flow.puml`](docs/diagrams/sequence/happy-flow.puml)
+![Happy Flow](2 step/sequence/happy-flow.svg)
+Исходник: [`2 step/sequence/happy-flow.puml`](2 step/sequence/happy-flow.puml)
 
 ### Переполнение буфера
 Отдельный случай, когда:
 - `Д1ОЗ2` — постановки в буфер;
 - `Д1ОО2` — выбора заявки для отказа;
 - дополнительного правила выбора самой старой заявки при одинаковом минимальном приоритете.
-![Переполнение буфера](docs/diagrams/sequence/overflow.svg)
-Исходник: [`docs/diagrams/sequence/overflow.puml`](docs/diagrams/sequence/overflow.puml)
+![Переполнение буфера](2 step/sequence/overflow.svg)
+Исходник: [`2 step/sequence/overflow.puml`](2 step/sequence/overflow.puml)
 
 ### Пакетная обработка
 Диаграмма показывает работу `Д2Б5` и `Д2П2`:
@@ -100,8 +100,8 @@ Worker
 - невозможность его расширения новыми заявками;
 - обработку заявок текущего пакета;
 - кольцевой выбор worker-процесса.
-![Пакетная обработка](docs/diagrams/sequence/package-processing.svg)
-Исходник: [`docs/diagrams/sequence/package-processing.puml`](docs/diagrams/sequence/package-processing.puml)
+![Пакетная обработка](2 step/sequence/package-processing.svg)
+Исходник: [`2 step/sequence/package-processing.puml`](2 step/sequence/package-processing.puml)
 
 ---
 ## Диаграмма классов
@@ -120,9 +120,9 @@ Worker
 | `EventCalendar` | Календарь событий |
 | `SimulationEngine` | Координация модельного времени и обработка событий |
 | `Statistics` | Сбор статистических показателей |
-![Диаграмма классов](docs/diagrams/class/class-diagram.svg)
+![Диаграмма классов](2 step/class/class-diagram.svg)
 
-Исходник: [`docs/diagrams/class/class-diagram.puml`](docs/diagrams/class/class-diagram.puml)
+Исходник: [`2 step/class/class-diagram.puml`](2 step/class/class-diagram.puml)
 
 ---
 ## Flowchart с дорожками
@@ -136,6 +136,6 @@ Flowchart описывает алгоритм обработки особых с
 - завершение активного пакета;
 - наличие заявок в буфере;
 - завершение моделирования.
-![Flowchart](docs/diagrams/flowchart/system-flow.svg)
+![Flowchart](2 step/flowchart/system-flow.svg)
 
-Исходник: [`docs/diagrams/flowchart/system-flow.puml`](docs/diagrams/flowchart/system-flow.puml)
+Исходник: [`2 step/flowchart/system-flow.puml`](2 step/flowchart/system-flow.puml)
